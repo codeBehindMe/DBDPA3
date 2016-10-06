@@ -108,11 +108,15 @@ WHERE coachID != 'coachID';
 -- Master.
 -- AwardCoaches.
 
-
+-- SQL Query
 SELECT firstName, lastName, concat(birthDay,'/',birthMon,'/',birthYear) AS birthDate, birthCountry, AwardCount
 FROM (SELECT substring(coachID,1,20) AS CoachID, count(*) as AwardCount FROM AwardsCoaches GROUP BY substring(coachID,1,20)) t1
 LEFT JOIN Master t2 ON SUBSTRING(t1.coachID, 1, 20) = SUBSTRING(t2.coachID, 1, 20);
 
+-- Hive QUERY
+SELECT firstName, lastName, concat(birthDay,'/',birthMon,'/',birthYear) AS birthDate, birthCountry, AwardCount
+FROM (SELECT coachID, count(*) as AwardCount FROM p_AwardsCoaches GROUP BY coachID) AS t1
+LEFT JOIN p_Master AS t2 ON t1.coachID = t2.coachID WHERE AwardCount > 1;
 -- ii: Coach who had the highest winrate for each year.
 -- FirstName, LastName, Year, Games(g), Wins(w), WinRate
 
@@ -121,6 +125,7 @@ LEFT JOIN Master t2 ON SUBSTRING(t1.coachID, 1, 20) = SUBSTRING(t2.coachID, 1, 2
 -- Master
 -- Coaches
 
--- Inserting data into hive
-
-
+SELECT firstname,lastName, t2.year, t2.games, t2.wins, t2.winRate FROM p_Master AS t1
+INNER JOIN (SELECT b.coachID, a.winRate, a.year, b.games, b.wins FROM (SELECT MAX(wins/games) as winRate, year from p_Coaches GROUP BY year) AS a
+LEFT JOIN p_Coaches AS b ON a.winRate = b.wins / b.games and a.year = b.year) AS t2
+ON t1.coachID = t2.coachID;
