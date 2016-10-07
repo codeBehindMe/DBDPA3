@@ -1,26 +1,3 @@
-/*
-======================================
-Pig
-======================================
-*/
-
-
-/*
-** IMPORTING DATA INTO PIG **
-*/
-
--- Look at the shell files.
-sh ls;
-
-
--- copy locally.
-
-copyFromLocal AwardsCoaches.csv AwardsCoaches.csv
-copyFromLocal Coaches.csv Coaches.csv
-copyFromLocal Master.csv Master.csv
-
--- Load
-
 AwardsCoaches = LOAD 'AwardsCoaches.csv' USING PigStorage(',') AS (coachID:chararray, award:chararray, year:int, igid:chararray);
 Coaches = LOAD 'Coaches.csv' USING PigStorage(',') AS (coachID:chararray, year:int, tmID:int,lgID:chararray, stInt:int, notes:chararray, games:Int,wins:int,losses:int,ties:int, postg:int,postw:int,postl:int,postt:int);
 Master = LOAD 'Master.csv' USING PigStorage(',') AS (
@@ -57,49 +34,6 @@ Master = LOAD 'Master.csv' USING PigStorage(',') AS (
     deathCity:chararray
 );
 
-
-
--- i : Coaches who have won more than 1 award
--- FirstName, LastName, DateOfBirth, BirthCountry, NumberOfAwards
-
--- Tables:
-----------
--- Master.
--- AwardCoaches.
-
-AC_Year = FOREACH AwardsCoaches GENERATE coachID AS coachID, year AS year; 
-AC_Coach_Group = GROUP AC_Year BY (coachID); 
-AC_Coach_Awards = FOREACH AC_Coach_Group GENERATE group as coachID, COUNT(AC_Year) as AwardsCount; 
-AC_Coach_MultiAward = FILTER AC_Coach_Awards BY (int)AwardsCount > 1; 
-
-M_Fields = FOREACH Master GENERATE coachID as coachID, firstName as firstName, lastName as lastName, CONCAT((chararray)birthYear,'/',(chararray)birthMon,'/',(chararray)birthDay) as birthDate, birthCountry as birthCountry;
-M_Fields_CoachOnly = FILTER M_Fields BY coachID != '';
-
-M_AC_Join = JOIN M_Fields_CoachOnly by coachID, AC_Coach_MultiAward by coachID;
-
-Result_Out = FOREACH M_AC_Join GENERATE firstName as firstName, lastName as lastName, birthDate as birthDate, birthCountry, AwardsCount as AwardsCount;
-
-dump Result_Out;
-
-/*
-=============================
-=      PIG RUN STATS        =
-=============================
-
-
-
-Script completed in 46 seconds and 149 milliseconds (46149 ms)
-
-*/
-
--- ii: Coach who had the highest winrate for each year.
--- FirstName, LastName, Year, Games(g), Wins(w), WinRate
-
--- Tables:
------------
--- Master
--- Coaches
-
 C_Fields = FOREACH Coaches GENERATE coachID as coachID,year as year, games as games, wins as wins, (float)wins/(float)games as winRate;
 C_Group_Year = GROUP C_Fields BY year;
 
@@ -116,13 +50,7 @@ M_C_Join = JOIN C_C_Fields by coachID, M_Fields_CoachOnly by coachID;
 
 Result_Out = FOREACH M_C_Join GENERATE firstName as firstName, lastName as LastName, year as year, games as games, wins as wins, winRate as winRate;
 
-
-/*
-=============================
-=      PIG RUN STATS        =
-=============================
+STORE Result_Out INTO 'Task_3_2' using PigStorage(',','-schema');
 
 
-Script completed in 1 Minute, 7 Seconds and 513 Milliseconds (67513 ms)
-
-*/
+copyToLocal Task_3_2 Task_3_2;

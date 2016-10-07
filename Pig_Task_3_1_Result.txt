@@ -1,0 +1,13 @@
+Art,Ross,1886/1/13,Canada,3
+Jack,Adams,1895/6/14,Canada,3
+Frank,Boucher,1901/10/7,Canada,2
+Scotty,Bowman,1933/9/18,Canada,2
+Pat,Burns,1952/4/4,Canada,3
+Jacques,Demers,1944/8/25,Canada,2
+Bill,Dineen,1932/9/18,Canada,2
+Dick,Irvin,1892/7/19,Canada,9
+Bobby,Kromm,1928/6/8,Canada,2
+Jacques,Lemaire,1945/9/7,Canada,2
+Lester,Patrick,1883/12/30,Canada,7
+Pat,Quinn,1943/1/29,Canada,2
+Paul,Thompson,1906/11/2,Canada,2
